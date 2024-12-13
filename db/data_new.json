@@ -1,0 +1,51 @@
+{
+    "0": {
+        "id": "coffre01",
+        "type": "action",
+        "etat": "0",
+        "timeLimit": "5",
+        "timestamp": "1733956117"
+    },
+    "1": {
+        "id": "coffre02",
+        "type": "action",
+        "etat": "0",
+        "timeLimit": "5",
+        "timestamp": "1733954550"
+    },
+    "3": {
+        "id": "actionneur02",
+        "type": "action",
+        "etat": "0",
+        "linkAction": "Plateau01",
+        "timestamp": "1733955941"
+    },
+    "4": {
+        "id": "Plateau01",
+        "type": "animation",
+        "etat": "0",
+        "timestamp": "1733315400"
+    },
+    "5": {
+        "id": "btnGallerie01L",
+        "type": "bouton",
+        "etat": "0.6283185307179586",
+        "linkAction": "gallerie01",
+        "timestamp": "1733315400"
+    },
+    "6": {
+        "id": "btnGallerie01R",
+        "type": "bouton",
+        "etat": "-0.6283185307179586",
+        "linkAction": "gallerie01",
+        "timestamp": "1733315400"
+    },
+    "7": {
+        "id": "gallerie01",
+        "type": "lien",
+        "name_3D": "action_gallerie01",
+        "etat": "18.221237390820797",
+        "animation": "rotation_y",
+        "timestamp": "1733928433"
+    }
+}
