@@ -303,7 +303,7 @@ scene.add(light);
 
 const loaderSB = new THREE.CubeTextureLoader(manager);
 const environmentMap = loaderSB.load([
-    'sb/left.jpg', 'sb/right.jpg', 'sb/top.jpg', 'sb/buttom.jpg','sb/back.jpg','sb/front.jpg'
+    './sb/left.jpeg', 'sb/right.jpeg', 'sb/top.jpeg', 'sb/buttom.jpeg','sb/back.jpeg','sb/front.jpeg'
 ],
 (texture) => {
     texture_SkyBox = texture
