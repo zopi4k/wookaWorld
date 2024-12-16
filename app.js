@@ -57,9 +57,9 @@ function updateRendererInfo() {
 
 // Modifier une donnée
 let id_User = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-
+//'http://127.0.0.1/db/update.php'
 function change(parm){
-    fetch('http://127.0.0.1/db/update.php', {
+    fetch('./db/update.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(parm)
