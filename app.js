@@ -6,7 +6,6 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 const loadingContainer = document.getElementById('loading-container');
 const progressBar = document.getElementById('progress-bar');
 const loadingText = document.getElementById('loading-text');
-
 // Fonction pour mettre à jour la progression
 function updateProgress(loaded, total) {
     const progress = (loaded / total) * 100;
@@ -20,45 +19,33 @@ function updateProgress(loaded, total) {
 }
 // Gestionnaire de chargement global
 const manager = new THREE.LoadingManager(
-    () => {
-        console.log('Chargement terminé');
-    },
-    (item, loaded, total) => {
-        updateProgress(loaded, total);
-    },
-    (url) => {
-        console.error(`Erreur lors du chargement : ${url}`);
-    }
+    () => {},(item, loaded, total) => {updateProgress(loaded, total);}
 );
 
 
 
-let fpsInfo = true
+let fpsInfo = true//--- afficher les FPS
 let infoDiv = false
 let lastFrameTime = performance.now();
 let frameCount = 0;
 let fps = 0
 if(fpsInfo){
- infoDiv = document.createElement('div');
-infoDiv.style.position = 'absolute';
-infoDiv.style.top = '50px';
-infoDiv.style.left = '10px';
-infoDiv.style.color = 'white';
-infoDiv.style.background = 'rgba(0, 0, 0, 0.5)';
-infoDiv.style.padding = '5px';
-infoDiv.style.fontFamily = 'Arial';
-infoDiv.style.fontSize = '12px';
-document.body.appendChild(infoDiv);
-
-
+    infoDiv = document.createElement('div');
+    infoDiv.style.position = 'absolute';
+    infoDiv.style.top = '50px';
+    infoDiv.style.left = '10px';
+    infoDiv.style.color = 'white';
+    infoDiv.style.background = 'rgba(0, 0, 0, 0.5)';
+    infoDiv.style.padding = '5px';
+    infoDiv.style.fontFamily = 'Arial';
+    infoDiv.style.fontSize = '12px';
+    document.body.appendChild(infoDiv);
 }
 function updateRendererInfo() {
+    const info = renderer.info; 
     if(fpsInfo && infoDiv){
-    const info = renderer.info;
-    infoDiv.innerHTML = `
-        FPS: ${fps}       
-    `;
-
+    infoDiv.innerHTML = `FPS: ${fps}`;
+    }
     const now = performance.now();
     frameCount++;
     if (now - lastFrameTime >= 1000) { 
@@ -67,24 +54,12 @@ function updateRendererInfo() {
         lastFrameTime = now;
     }
 }
-}
-
-
-
-
-
-
-
-
-
-
-
 
 // Modifier une donnée
 let id_User = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
 function change(parm){
-    fetch('./db/update.php', {
+    fetch('http://127.0.0.1/db/update.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(parm)
@@ -92,6 +67,7 @@ function change(parm){
     .then(response => response.json())
     .then(data => onChange(data));
 }
+
 let tabPlayerActifDB=[]
 let tabActionDB= []
 let tabAimation = []
@@ -99,8 +75,6 @@ let objetAction = {}
 let infoObjetDB = {}
 let tabPlayerActifWorld=[]
 let timeStampServer = false
-
-
 function onChange(data){
     if (Object.values(data).length >1) {
         tabPlayerActifDB=[]
@@ -124,10 +98,7 @@ function onChange(data){
             if(value.type == "action"){
                 tabActionDB.push(value)
                 if(value.etat == "1" && objetAction[value.id]!= "1" ){
-                    
-
                     if(objetAction[value.id] == undefined){
-
                         //------------ premiere foix qu'il est appeler = replacer les animations sans le play
                         gotoAndStopAtEnd(value.id,"1");
                         if(value.linkAction){
@@ -135,31 +106,23 @@ function onChange(data){
                         }
                     }else{
                          playAnimationByName(value.id,"1");
-                  
                         if(value.linkAction){
                             playAnimationByName(value.linkAction,"1");
                         }
                     }
-                  
-
-                     objetAction[value.id] = "1";
+                    objetAction[value.id] = "1";
                 }else if(value.etat == "0" && objetAction[value.id]!= "0"){
-                  
-
                     if(objetAction[value.id] == undefined){
-
                         gotoAndStopAtEnd(value.id,"0");
                         if(value.linkAction){
                             gotoAndStopAtEnd(value.linkAction,"0");
                         }
                     }else{
                         playAnimationByName(value.id,"0");
-                        
                         if(value.linkAction){
                             playAnimationByName(value.linkAction,"0");
                         }
                     }
-                    
                     objetAction[value.id] = "0";
                  }
                  if(value.timeLimit){
@@ -205,8 +168,6 @@ function onChange(data){
                 clone_tabPlayerActifWorld.splice(i,1)
             }
         }      
-      
-
         for(let a = 0; a<tabPlayerActifDB.length;a++){
             let findPlayerNew = true
             for(let i = 0; i<tabPlayerActifWorld.length;i++){
@@ -219,11 +180,7 @@ function onChange(data){
                     createPlayer(tabPlayerActifDB[a])
             }
         }
-
-    }else{
-       console.log("bigbug") 
     }
-
 }
 
 function animations(){
@@ -246,22 +203,18 @@ function findObjectByName(scene, name) {
     if (scene.name === name) {
         return scene;
     }
-
     for (let child of scene.children) {
         const result = findObjectByName(child, name);
         if (result) {
             return result;
         }
     }
-
     return null;
 }
 
 
-
 // Initialiser Three.js
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);//75
 const null1 = new THREE.Object3D();
 const null2 = new THREE.Object3D();
@@ -270,11 +223,11 @@ null1.add(null2);
 // Position initiale de la camera
 camera.position.set(0, 0, 0);
 scene.add(null1);
+//scene.fog = new THREE.FogExp2(0x50ABD5,0.015)
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
-
 document.body.appendChild(renderer.domElement);
 let texture_SkyBox = ""
 const light = new THREE.DirectionalLight(0xffffff, 3);
@@ -289,34 +242,16 @@ light.shadow.camera.top = 10*3;
 light.shadow.camera.bottom = -10*3;
 scene.add(light);
 
+//const shadowCameraHelper = new THREE.CameraHelper(light.shadow.camera);
+//scene.add(shadowCameraHelper);
 
-
-
-
-
-
-
-
-
-
-//scene.add(new THREE.CameraHelper(light.shadow.camera))
+//const directionalLightHelper = new THREE.DirectionalLightHelper(light, 5); // 5 est la taille du helper
+//scene.add(directionalLightHelper);
 
 const loaderSB = new THREE.CubeTextureLoader(manager);
-const environmentMap = loaderSB.load([
-    './sb/left.jpeg', 'sb/right.jpeg', 'sb/top.jpeg', 'sb/buttom.jpeg','sb/back.jpeg','sb/front.jpeg'
-],
-(texture) => {
-    texture_SkyBox = texture
-    scene.environment = environmentMap;
-},
-(xhr) => {
- 
-},
-(error) => {
-    console.error('An error happened', error);
-});
-
-
+const environmentMap = loaderSB.load(
+['./sb/left.jpeg', './sb/right.jpeg', './sb/top.jpeg', './sb/buttom.jpeg','./sb/back.jpeg','./sb/front.jpeg'],
+(texture) => {    texture_SkyBox = texture; scene.environment = environmentMap;});
 
 
 
@@ -329,23 +264,21 @@ function createPlayer(elm){
     }
     const WookaUser1 = new THREE.Object3D();
     WookaUser1.add(wookaClone);
-    WookaUser1.idUser = elm.id  
+    WookaUser1.idUser = elm.id;
     WookaUser.add(WookaUser1);
-    elm.obj3D = WookaUser1
-    elm.obj3D_2 = wookaClone
-    elm.oldPosX = elm.x
-    elm.oldPosY = elm.y
-    elm.oldPosZ = elm.z
-    elm.oldRotX = elm.rotX
-    elm.oldRotY = elm.rotY
-    tabPlayerActifWorld.push(elm)
-   
+    elm.obj3D = WookaUser1;
+    elm.obj3D_2 = wookaClone;
+    elm.oldPosX = elm.x;
+    elm.oldPosY = elm.y;
+    elm.oldPosZ = elm.z;
+    elm.oldRotX = elm.rotX;
+    elm.oldRotY = elm.rotY;
+    tabPlayerActifWorld.push(elm);
 }
+
 function movPlayer(){
     if(world3D && tabPlayerActifWorld.length>0){
         for(let i = 0; i<tabPlayerActifWorld.length;i++){
-
-
             let MoveYFind_
             // Créer un rayon pour le raycasting
             const raycaster = new THREE.Raycaster();
@@ -360,7 +293,7 @@ function movPlayer(){
                 for( let a = 0 ; a<intersects.length  ; a++){
                     distPoint = Math.floor(tabPlayerActifWorld[i].oldPosY - (intersects[a].point.y))
                     if(distPoint>=-2 && distPoint<=2){
-                        if(intersects[i].object.name.split("_")[0] != "billboard"){
+                        if(intersects[i].object.name.split("_")[0] != "billboard2D" && intersects[i].object.name.split("_")[0] != "billboard3D"){
                         MoveYFind_ = intersects[a].point.y
                         tabUp.push(MoveYFind_)
                         }
@@ -372,19 +305,12 @@ function movPlayer(){
                 MoveYFind_ = tabUp[0]
             }
            
-
-           
             tabPlayerActifWorld[i].oldPosX -= (tabPlayerActifWorld[i].oldPosX - Number(tabPlayerActifWorld[i].x))/20         
             tabPlayerActifWorld[i].oldPosY -= (tabPlayerActifWorld[i].oldPosY - MoveYFind_)/2
             tabPlayerActifWorld[i].oldPosZ -= (tabPlayerActifWorld[i].oldPosZ - Number(tabPlayerActifWorld[i].z))/20
-            
             tabPlayerActifWorld[i].oldRotX -= (tabPlayerActifWorld[i].oldRotX - Number(tabPlayerActifWorld[i].rotX))/20
             tabPlayerActifWorld[i].oldRotY -= (tabPlayerActifWorld[i].oldRotY - Number(tabPlayerActifWorld[i].rotY))/20
-
-      
             tabPlayerActifWorld[i].obj3D.position.set(tabPlayerActifWorld[i].oldPosX , tabPlayerActifWorld[i].oldPosY,tabPlayerActifWorld[i].oldPosZ )
-    
-             
             tabPlayerActifWorld[i].obj3D.rotation.set(0,tabPlayerActifWorld[i].oldRotX,0)
             tabPlayerActifWorld[i].obj3D_2.rotation.set(tabPlayerActifWorld[i].oldRotY,0,0)
 
@@ -392,50 +318,23 @@ function movPlayer(){
     }
 }
 
-
-
-
-
-
-
 function isLightVisible() {
-if(world3D){
-    let worldLightPosition, direction, angle, setVisible;
-    let worldCameraPosition = new THREE.Vector3();
-    camera.getWorldPosition(worldCameraPosition);
-    let cameraDirection = new THREE.Vector3();
-    camera.getWorldDirection(cameraDirection); 
-    for(let i = 0 ; i<Elm3DWorld.length ; i++){
-        worldLightPosition = new THREE.Vector3();
-        Elm3DWorld[i].getWorldPosition(worldLightPosition);
-    
-        // Calculer le vecteur directionnel entre l'objet et la caméra
-        direction = new THREE.Vector3().subVectors(worldLightPosition, worldCameraPosition).normalize();
-    
-        // Calculer l'angle entre la direction de la caméra et la direction de l'objet
-        angle = direction.angleTo(cameraDirection); // Retourne l'angle en radians
-    
-        // Définir la visibilité selon le champ de vision de la caméra
-        setVisible = angle < (120/ 2) * (Math.PI / 180);
-        Elm3DWorld[i].visible = setVisible;
-      
+    if(world3D){
+        let worldLightPosition, direction, angle, setVisible;
+        let worldCameraPosition = new THREE.Vector3();
+        camera.getWorldPosition(worldCameraPosition);
+        let cameraDirection = new THREE.Vector3();
+        camera.getWorldDirection(cameraDirection); 
+        for(let i = 0 ; i<Elm3DWorld.length ; i++){
+            worldLightPosition = new THREE.Vector3();
+            Elm3DWorld[i].getWorldPosition(worldLightPosition);
+            direction = new THREE.Vector3().subVectors(worldLightPosition, worldCameraPosition).normalize();
+            angle = direction.angleTo(cameraDirection);
+            setVisible = angle < (120/ 2) * (Math.PI / 180);
+            Elm3DWorld[i].visible = setVisible;
+        }
     }
-
-   
 }
-
- 
-
-}
-
-
-
-
-
-
-
-
-
 
 
 // Charger le modele 3D
@@ -449,29 +348,66 @@ let WookaUser = new THREE.Group();
 let scaleWolrd = 1
 let Elm3DWorld = []
 let Elm3DBillBoard = []
+let Elm3DEmeteur = {}
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath( './01700/libs/draco/' );
 loader.setDRACOLoader( dracoLoader );
 loader.load('world.glb', function (gltf) {
     world3D =gltf.scene
     world3D.visible = false;
-    
     world3D.scale.set(scaleWolrd, scaleWolrd,scaleWolrd);
     objet3DWorld_Wooka = world3D.getObjectByName('wooka');
     objet3DWorld_Wooka.visible = false;
     objet3DWorld_Wooka.scale.set(0, 0, 0);
     scene.add(WookaUser);
-    //---- shadows
-    world3D.traverse((child) => {
-        if(child.isMesh){
-            if(child.name.split("_")[0]  == "billboard"){
-                child.castShadow = false
-                child.receiveShadow = false
+    // Access the animation
+    if (gltf.animations.length > 0) {
+        animWorld = new THREE.AnimationMixer(world3D);
+        tabAnimWorld = gltf.animations
+        mixersAnims = []
+        for(let i=0;i<tabAnimWorld.length;i++){
+            if(tabAnimWorld[i].name.split("_")[0] == "loop" ){
+                let anim = animWorld.clipAction(tabAnimWorld[i])
+                anim.play();
+                if(tabAnimWorld[i].name.split("-")[1]){
+                    anim.setDuration(tabAnimWorld[i].name.split("-")[1]);
+                    
+                }
+               
             }else{
+                animWorld.clipAction(tabAnimWorld[i])
+            }
+        }   
+    }
+    world3D.traverse((child) => {
+        if(child.name.split("_")[0]  == "particule"){
+            //particule_billboard2D-part01_p01_10_3_coffre01-bas_coffre01_1
+            //nameAnim = p01_1
+           let decoupElm = child.name.split("_")
+            Elm3DEmeteur[decoupElm[6]] = {
+                name:decoupElm[2],
+                nameObjAction:decoupElm[5].replace("-", "_"),
+                nameAction:decoupElm[6],
+                nameParticule:decoupElm[1].replace("-", "_"),
+                maxPart: Number(decoupElm[3]),
+                sizeMax: Number(decoupElm[4]),
+                anim: decoupElm[7],
+                nameAnim: decoupElm[2]+"_"+decoupElm[7],
+                isActif:false
+            }
+            initParticules(Elm3DEmeteur[decoupElm[6]],child.name)
+        }
+        if(child.isMesh){ 
+            child.castShadow = true
+            child.receiveShadow = true
+            if(child.name.split("_")[0]  == "billboard3D"){
                 child.castShadow = true
                 child.receiveShadow = true
             }
-            
+            if(child.name.split("_")[0]  == "billboard2D"){
+                child.castShadow = false
+                child.receiveShadow = false
+            }
             if(child.material.name == "void"){
                 child.visible = false
             }
@@ -485,30 +421,13 @@ loader.load('world.glb', function (gltf) {
         }
     })
     scene.add(world3D);
-    // Access the animation
-    if (gltf.animations.length > 0) {
-        animWorld = new THREE.AnimationMixer(world3D);
-        tabAnimWorld = gltf.animations
-        mixersAnims = []
-        for(let i=0;i<tabAnimWorld.length;i++){
-
-            if(tabAnimWorld[i].name.split("_")[0] == "loop" ){
-                animWorld.clipAction(tabAnimWorld[i]).play();
-            }else{
-                animWorld.clipAction(tabAnimWorld[i])
-            }
-        }   
-    }
-
-    // Créer un rayon pour le raycasting
+   
     const raycaster = new THREE.Raycaster();
-    // Mettre à jour le rayon
     const origin = new THREE.Vector3(0,hauteur_decalCam,0 );
     const direction = new THREE.Vector3(0, -1, 0).normalize();
     raycaster.set(origin, direction);
     const intersects = raycaster.intersectObjects([world3D]);
     if (intersects.length > 0) {
-        //----- placer la cam sur le terrain
         null1.position.set( 0,intersects[0].point.y+hauteur_decalCam,0 );
         hauteurCam = MoveY = getOldMoveY =intersects[0].point.y
     }
@@ -522,16 +441,79 @@ loader.load('world.glb', function (gltf) {
     console.error('An error happened', error);
 } );
 
-function link_obj(){
-    let sol = world3D.getObjectByName('sol');
-    for(let i = 0 ; i< sol.children.length ; i++){
-        if(sol.children[i].name.split("_")[1]  == "arbre"){
-           clone3D('loop_arbre',sol.children[i])
-        }
-        if(sol.children[i].name.split("_")[1]  == "herbe"){
-            clone3D('loop_herbe',sol.children[i])
+
+
+function initParticules(_elm,_name){
+ 
+    let objetAction = world3D.getObjectByName(_elm.nameObjAction);
+    const objetActionWorldPosition = new THREE.Vector3();
+    objetAction.getWorldPosition(objetActionWorldPosition);
+    let obj_anim = world3D.getObjectByName(_name);
+    obj_anim.scale.set(0, 0, 0);
+    let obj_part = world3D.getObjectByName(_elm.nameParticule);
+    obj_part.scale.set(0, 0, 0);
+
+    for (let i = 0; i < _elm.maxPart; i++) {
+        //--- créer un conteur vide
+        let conteneur = new THREE.Object3D();
+        let elm3D = obj_anim.clone(true);
+        elm3D.scale.set(1, 1, 1);
+        scene.add(conteneur);
+        conteneur.add(elm3D)
+        let elm3Dpart = obj_part.clone(true);
+        elm3Dpart.scale.set(1, 1, 1);
+        elm3D.add(elm3Dpart);
+        //ajouter le clone de la particule
+        conteneur.position.set(
+            objetActionWorldPosition.x+getRandom(_elm.sizeMax)-getRandom(_elm.sizeMax), 
+            objetActionWorldPosition.y,
+            objetActionWorldPosition.z+getRandom(_elm.sizeMax)-getRandom(_elm.sizeMax)
+        )
+        // Créer un AnimationMixer pour le clone
+        elm3D.id_1 = _elm.name+"_"+i
+        const mixerClone = new THREE.AnimationMixer(elm3D);
+        mixerClone.id_2 = _elm.name+"_"+i
+        const clips = tabAnimWorld.filter((clip) => clip.name.includes(_elm.nameAnim));
+        if (clips.length > 0) {
+            const action = mixerClone.clipAction(clips[0]);
+            action.reset(); // Réinitialise l'action
+            action.time = action.getClip().duration;
+            action.paused = true; // Empêche la lecture
+            action.play(); 
+            mixersAnims.push(mixerClone);
         }
     }
+
+}
+
+
+
+
+
+
+function link_obj(){
+    let obj3DDataLink = []
+    let obj3DDataNoLink = []
+     world3D.traverse((child) => {
+           if(child.name.split("_")[0]  == "link"){
+               obj3DDataLink.push(child)
+           }
+           if(child.name.split("_")[0]  != "link"){
+               obj3DDataNoLink.push(child)
+           }
+       })
+       for(let i = 0 ; i < obj3DDataLink.length ; i++){
+           for(let n = 0 ; n < obj3DDataNoLink.length ; n++){
+               if(obj3DDataLink[i].name.split("_")[1]  == obj3DDataNoLink[n].name.split("_")[1] ){
+                let getName = obj3DDataNoLink[n].name.split("_")[0]+"_"+obj3DDataNoLink[n].name.split("_")[1]
+                clone3D(getName,obj3DDataLink[i])
+               }
+               if(obj3DDataLink[i].name.split("_")[1]  == obj3DDataNoLink[n].name.split("_")[0] ){
+                let getName = obj3DDataNoLink[n].name.split("_")[0]
+                clone3D(getName,obj3DDataLink[i])
+               }
+           }
+       }
 }
 //-------------------- Cloner 3D
 function clone3D(getObjet,getCible){
@@ -544,32 +526,27 @@ function clone3D(getObjet,getCible){
     const mixerClone = new THREE.AnimationMixer(elm3D);
     const clips = tabAnimWorld.filter((clip) => clip.name.includes(getObjet));
     if (clips.length > 0) {
-        const action = mixerClone.clipAction(clips[0]); // Utilisez la première animation liée à l'arbre
+        const action = mixerClone.clipAction(clips[0]);
         action.play();
+        mixersAnims.push(mixerClone);
     }
-    mixersAnims.push(mixerClone);
 }
 
 function initBillBoard(){
     scene.traverse((child) => {
         if(child.isMesh){
-            if(child.name.split("_")[0]  == "billboard"){
+            if(child.name.split("_")[0]  == "billboard2D"){
                 Elm3DBillBoard.push(child)
-
-
-                // Supposons que 'object' est votre Mesh avec une texture déjà appliquée.
-                const texture = child.material.map; // Récupérer la texture de l'ancien matériau
-
-                // Créer un nouveau matériau MeshBasicMaterial
+               const texture = child.material.map;
                 const basicMaterial = new THREE.MeshBasicMaterial({
                     map: texture,
-                    transparent: true, // Pour supporter les textures avec transparence
-                    alphaTest: 0.5,    // Facultatif : pour éviter les artefacts sur les zones transparentes
+                    transparent: true, 
+                    alphaTest: 0.5, 
                 });
-
-                // Appliquer le nouveau matériau à l'objet
                 child.material = basicMaterial;
-
+            }
+            if(child.name.split("_")[0]  == "billboard3D"){
+                Elm3DBillBoard.push(child)
             }
         }
     })
@@ -584,10 +561,6 @@ function orientationBillBoard(){
         billboard.lookAt(cameraWorldPosition);
     });
 }
-
-
-
-
 
 
 let hauteurCam = 0
@@ -613,7 +586,7 @@ function hauterCamera() {
                 distPoint = Math.floor(null1.position.y - (intersects[i].point.y+hauteur_decalCam))
                if(distPoint>=-2 && distPoint<=2){
 
-                if(intersects[i].object.name.split("_")[0] != "billboard"){
+                if(intersects[i].object.name.split("_")[0] != "billboard2D" &&  intersects[i].object.name.split("_")[0] != "billboard3D" ){
                     MoveYFind = intersects[i].point.y
                     tabUp.push(intersects[i].point.y)
                 }
@@ -631,9 +604,6 @@ function hauterCamera() {
 
         }else{
             setOut = true
-     
-          
-             //null1.position.set(MoveX,MoveY+2,MoveZ)
         }
     }
 }
@@ -646,10 +616,9 @@ let isOut = false;
 let isRightBtn = false;
 let isLeftBtn = false;
 let isCentertBtn = false;
+let isMoving = false
 let lastMousePosition = { x: 0, y: 0 };
 let touchStartPos = 0;
-let isMoving = false
-
 // -----------------------------------------------------------------------    Gestion des evenements de souris
 
 
@@ -669,10 +638,7 @@ renderer.domElement.addEventListener('mousedown', (event) => {
 const raycasterClick = new THREE.Raycaster();
 const mouseClick = new THREE.Vector2();
 function chekCklic (event){
-    if(isMoving){
-
-    }else{
-
+    if(!isMoving){
         // Calcul des coordonnées de la souris (normalisées entre -1 et 1)
         mouseClick.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouseClick.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -693,16 +659,18 @@ function chekCklic (event){
 
         // Intersections avec les objets de la scène
         const intersects = raycasterClick.intersectObjects(scene.children, true);
-
         if (intersects.length > 0) {
-            const intersection = intersects[0];
-            /*console.log('Intersection:', intersection);
-            console.log('Intersection:', intersection.object.material.name);
-            console.log("Distance: " + intersection.distance);*/
-            if(intersection.distance <7){
-                ClickObject(intersection)
+            for (let i = 0; i < intersects.length; i++) {
+                if(intersects[i].object){
+                  
+                if( intersects[i].object.name.split('_')[0] == "action" ){
+                    const intersection = intersects[i];
+                    if(intersection.distance <7){
+                        ClickObject(intersection)
+                    }
+                }
             }
-
+            }
         } else {
             console.log('Aucun objet détecté.');
         }
@@ -711,9 +679,6 @@ function chekCklic (event){
 
 
 function ClickObject (elm){
-
-
-
     if( elm.object.name.split('_')[0] == "action" ){
          //---- recupérer le nom
         let getNameElm = elm.object.name.split("_")[1] 
@@ -766,10 +731,7 @@ function ClickObject (elm){
                 window.open(elm.object.material.name.split("_")[1], "_blank");
             }
         }
-
-
     }
-
 }
 
 function findClipByName(name) {
@@ -790,10 +752,55 @@ function playAnimationByName(_name,_action) {
        action.clampWhenFinished = action.stop();
         // Jouez l'action trouvée 
         action.play();
+        animPart(_name,_action)
     } else {
         console.warn(`Animation non trouvée.`);
     }
 }
+function animPart(_name,_action){
+    if(Elm3DEmeteur[_name]){
+        if(Elm3DEmeteur[_name].anim ==_action ){
+            Elm3DEmeteur[_name].isActif = true
+        }else{
+            Elm3DEmeteur[_name].isActif = false
+        }
+    }
+}
+function getRandomInt(nbmax) {
+    return Math.floor(Math.random() * nbmax);
+}
+function getRandom(nbmax) {
+    return Math.random() * nbmax;
+}
+function animationsPart() {
+    
+    for (let key in Elm3DEmeteur) {
+        let elm = Elm3DEmeteur[key]
+        if(elm.isActif){
+            let ranD = getRandomInt(elm.maxPart)
+          let findAnime = false
+            if( ranD< elm.maxPart ){
+          for (let index = 0; index < mixersAnims.length; index++) {
+           if(elm.name+"_"+ranD == mixersAnims[index].id_2){
+            findAnime = mixersAnims[index]
+            let action = findAnime.clipAction(findClipByName(elm.nameAnim))
+            if (!action.isRunning()) {
+                // Configurez l'action pour ne pas se répéter
+                action.setLoop(THREE.LoopOnce);
+                // Définissez une fonction à appeler lorsque l'animation est terminée
+                action.clampWhenFinished = action.stop();
+                 // Jouez l'action trouvée 
+                 action.setDuration(getRandom(3)+0.2);
+                 action.play();
+             }
+           }
+          }
+        }
+        }
+    }
+}
+
+
 
 function gotoAndStopAtEnd(_name,_action){
      // Recherchez l'action correspondant à l'animation par son nom
@@ -813,8 +820,6 @@ function gotoAndStopAtEnd(_name,_action){
         console.warn(`Animation non trouvée.`);
     }
 }
-
-
 //------------------------------ clic gauche
 renderer.domElement.addEventListener('mousedown', function (event) {
     isDragging = true;
@@ -858,13 +863,10 @@ renderer.domElement.addEventListener('mousemove', function (event) {
     if(isLeftBtn){
         moveCam( false ,0,1,  -deltaY/5 )
     }
-
     if(isRightBtn || isLeftBtn || isCentertBtn) {
         // Tourner la camera horizontalement
         null1.rotation.y -= deltaX * 0.005;
-        
     }
-
     if(isRightBtn ||isCentertBtn ){
         // Basculer la camera verticalement
         null2.rotation.x -= deltaY * 0.01;
@@ -925,105 +927,60 @@ function updateCameraPosition() {
             hauteurCam = MoveY = getOldMoveY
             null1.position.set( getOldPosX, hauteurCam+hauteur_decalCam, getOldPosZ) 
         }
-       
-       
-
-
-
-   if (moveLeft && !keyShift)  null1.rotation.y += 0.03;
-   if (moveRight && !keyShift)  null1.rotation.y -= 0.03;
-   if (moveForward && keyShift) {
+   if (keys.moveLeft && !keys.keyShift)  null1.rotation.y += 0.03;
+   if (keys.moveRight && !keys.keyShift)  null1.rotation.y -= 0.03;
+   if (keys.moveForward && keys.keyShift) {
         null2.rotation.x += 0.03;
         if (null2.rotation.x > Math.PI / 4) null2.rotation.x = Math.PI / 4;
    }
-   if (moveBackward && keyShift) {
+   if (keys.moveBackward && keys.keyShift) {
         null2.rotation.x -= 0.03;
         if (null2.rotation.x < -Math.PI / 2) null2.rotation.x = -Math.PI / 2;
   }
 
-  if (moveForward && !keyShift) {
+  if (keys.moveForward && !keys.keyShift) {
     moveCam( false, 0,-1, 1)
   }
 
-  if (moveBackward && !keyShift) {
+  if (keys.moveBackward && !keys.keyShift) {
     moveCam( false, 0,-1, -1)
   }
 
-  if (moveLeft && keyShift) {
+  if (keys.moveLeft && keys.keyShift) {
     moveCam( false, -1,0, 1)
   }
 
-  if (moveRight && keyShift) {
+  if (keys.moveRight && keys.keyShift) {
     moveCam( false, -1,0, -1)
   }
-    
-    // Ajoutez ici votre logique pour ajuster la position de la camera
-    // Par exemple, utilisez un raycast pour detecter si la camera touche le sol
 }
 
-// Variables pour stocker les mouvements
-let moveForward = false;
-let moveBackward = false;
-let moveLeft = false;
-let moveRight = false;
-let keyShift = false;
-let keySpace = false;
-function onKeyDown(event) {
-    switch (event.code) {
-        case 'ArrowUp':
-            moveForward = true;
-            break;
-        case 'ArrowDown':
-            moveBackward = true;
-            break;
-        case 'ArrowLeft':
-            moveLeft = true;
-            break;
-        case 'ArrowRight':
-            moveRight = true;
-            break;
-        case 'ShiftLeft':
-            keyShift = true;
-            break;
-        case 'ShiftRight':
-            keyShift = true;
-            break;
-        case 'Space':
-            keySpace = true;
-            break;
-    }
+
+
+
+// Objet pour stocker l'état des mouvements
+const movements = {
+    ArrowUp: 'moveForward',
+    ArrowDown: 'moveBackward',
+    ArrowLeft: 'moveLeft',
+    ArrowRight: 'moveRight',
+    ShiftLeft: 'keyShift',
+    ShiftRight: 'keyShift',
+    Space: 'keySpace'
+};
+// Objet pour stocker les états des touches
+const keys = {};
+function handleKey(event, value) {
+    const key = movements[event.code];
+    keys[key] = value;
 }
-function onKeyUp(event) {
-    switch (event.code) {
-        case 'ArrowUp':
-            moveForward = false;
-            break;
-        case 'ArrowDown':
-            moveBackward = false;
-            break;
-        case 'ArrowLeft':
-            moveLeft = false;
-            break;
-        case 'ArrowRight':
-            moveRight = false;
-            break;
-        case 'ShiftLeft':
-            keyShift = false;
-            break;
-        case 'ShiftRight':
-            keyShift = false;
-            break;
-        case 'Space':
-            keySpace = false;
-            break;
-    }
-}
-window.addEventListener('keydown', onKeyDown);
-window.addEventListener('keyup', onKeyUp);
-
-
-
-
+// Écouteurs d'événements
+window.addEventListener('keydown', function(event) { 
+    handleKey(event, true);
+});
+window.addEventListener('keyup', function(event) {
+    handleKey(event, false);
+});
 
 
 
@@ -1069,7 +1026,6 @@ renderer.domElement.addEventListener('touchmove', function (event) {
 
 
 let timeDB = 0
-
 function checkTimeDB(){
     timeDB++
     if(timeDB==25){
@@ -1077,30 +1033,24 @@ function checkTimeDB(){
         change({type:"player",id:id_User,x:null1.position.x,y:null1.position.y,z:null1.position.z,rotX:null1.rotation.y,rotY:null2.rotation.x});
     }
 }
+
 // Boucle de rendu 
 const clock = new THREE.Clock();
-function animate() {
-   //if(window.innerHeight>1000 && window.innerHeight>window.innerWidth && fps<35){
-       // renderer.setPixelRatio(0.3);
-    //}else{
-        
-let fps_ = 1
-if(fps<60){
-    fps_ = (fps+30)/100
-}
- renderer.setPixelRatio(fps_);
-
-
-    //}
+function animate() {     
+    let fps_ = 1
+    if(fps<60){
+        fps_ = (fps+30)/100
+    }
+    renderer.setPixelRatio(fps_);
    checkTimeDB();
-   
    if(animWorld){
     updateCameraPosition();
      animations()
+     animationsPart()
     movPlayer()
     const delta = clock.getDelta();
     animWorld.update(delta); //0.016 Update the mixer with a fixed delta time (16ms)
-    //-------------------- Cloner 3D
+    //-------------------- Animation des Clone 3D
     for (let index = 0; index < mixersAnims.length; index++) {
         mixersAnims[index].update(delta)
     }
@@ -1108,19 +1058,9 @@ if(fps<60){
    }
 
    isLightVisible() 
-    // Rendu avec le composer
-
-    renderer.render(scene, camera);
-
-   //
-
-
+   renderer.render(scene, camera);
    updateRendererInfo();
    requestAnimationFrame(animate);  
-  
-   
-
-
 }
 animate();
 
